@@ -21,7 +21,7 @@
     // 中文（简体）-> 中文（中国）-> 中文 -> 中文（香港） -> 中文（台湾）
     const LANGUAGE_CODE_PRIORITY = [ 'zh-Hans', 'zh-CN', 'zh', 'zh-HK', 'zh-TW' ]
 
-    function getBestLanguageCode(captions) {
+    function getPreferredLanguageCode(captions) {
         if (captions) {
             for (const code of LANGUAGE_CODE_PRIORITY) {
                 for (const caption of captions) {
@@ -33,37 +33,69 @@
         }
     }
 
-    let player
-
-    function changeCaptionLanguage() {
+    function switchCaption(api) {
         // No languageCode means caption not enabled
-        const captionsSetting = player.getOption?.('captions', 'track')
+        const captionsSetting = api.getOption?.('captions', 'track')
         if (!captionsSetting?.languageCode) {
             return
         }
-        const code = getBestLanguageCode(player.getOption('captions', 'tracklist'))
+        const code = getPreferredLanguageCode(api.getOption('captions', 'tracklist'))
         if (code && code !== captionsSetting.languageCode) {
-            player.setOption?.('captions', 'track', { languageCode: code })
+            api.setOption?.('captions', 'track', { languageCode: code })
         }
     }
 
-    function hookPlayer() {
-        const newPlayer = document.getElementById('movie_player') || document.getElementById('c4-player')
-        if (player !== newPlayer) {
-            player = newPlayer
-        }
+    const hookedButtons = new Set()
+
+    function hookPlayer(player, api) {
         if (!player) {
             return
         }
-
-        const subtitleButtons = player.getElementsByClassName('ytp-subtitles-button ytp-button')
-        for (const button of subtitleButtons) {
-            button.addEventListener('click', changeCaptionLanguage)
+        if (!api) {
+            api = player
         }
 
-        changeCaptionLanguage()
+        if (api.getOptions?.('captions')) {
+            switchCaption(api)
+        } else {
+            function onApiChange() {
+                if (api.getOptions?.('captions')) {
+                    switchCaption(api)
+                    api.removeEventListener('onApiChange', onApiChange)
+                }
+            }
+            // Known issue: can't auto switch after offline re-online sometimes,
+            // onApiChange will not trigger even tho caption module do reloaded
+            // I don't know if there's any way to solve this right now
+            api.addEventListener('onApiChange', onApiChange)
+        }
+
+        const subtitleButtons = player.getElementsByClassName('ytp-subtitles-button')
+        for (const button of subtitleButtons) {
+            if (hookedButtons.has(button)) {
+                continue
+            }
+            hookedButtons.add(button)
+            button.addEventListener('click', () => {
+                switchCaption(api)
+            })
+        }
     }
 
-    window.addEventListener('load', hookPlayer)
-    window.addEventListener('yt-page-data-updated', hookPlayer)
+    const MAIN_PLAYER_ID = 'movie_player'
+    // inline-preview-player does not exist until first time user triggers it
+    const YT_PLAYER_IDS = [ MAIN_PLAYER_ID, 'c4-player', /* 'inline-preview-player' */ ]
+
+    // Embed videos don't have yt events (at least I don't know)
+    // Known issue: can't auto switch embed video's subtitle if they loads another one
+    if (window.location.pathname.split('/')[1] === 'embed') {
+        hookPlayer(document.getElementById(MAIN_PLAYER_ID))
+    } else {
+        for (const id of YT_PLAYER_IDS) {
+            hookPlayer(document.getElementById(id))
+        }
+        window.addEventListener('yt-player-updated', (event) => {
+            hookPlayer(event.target, event.detail)
+        })
+    }
 })()
