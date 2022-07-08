@@ -7,7 +7,3 @@ The reason why I made this is because there's a lot of Chinese language codes fo
 ## Usage
 
 It will try to switch to Chinese subtitle when you click the caption button (short cut `C` not included) and when the video first loaded
-
-## Note
-
-Using all url match is because of iframes
