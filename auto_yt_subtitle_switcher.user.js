@@ -7,8 +7,8 @@
 // @description:zh 自动切换 YouTube 字幕到中文
 // @homepage       https://github.com/Legend-Master/YouTube-Subtitle-Auto-Switcher
 // @icon           https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL      https://raw.githubusercontent.com/Legend-Master/YouTube-Subtitle-Auto-Switcher/main/auto_yt_subtitle_switcher.js
-// @downloadURL    https://raw.githubusercontent.com/Legend-Master/YouTube-Subtitle-Auto-Switcher/main/auto_yt_subtitle_switcher.js
+// @updateURL      https://github.com/Legend-Master/YouTube-Subtitle-Auto-Switcher/raw/main/auto_yt_subtitle_switcher.user.js
+// @downloadURL    https://github.com/Legend-Master/YouTube-Subtitle-Auto-Switcher/raw/main/auto_yt_subtitle_switcher.user.js
 // @supportURL     https://github.com/Legend-Master/YouTube-Subtitle-Auto-Switcher/issues
 // @match          http://www.youtube.com/*
 // @match          https://www.youtube.com/*
