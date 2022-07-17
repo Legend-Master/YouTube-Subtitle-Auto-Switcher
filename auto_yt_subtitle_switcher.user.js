@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube Subtitle Auto Switcher
 // @namespace      https://github.com/Legend-Master
-// @version        0.2
+// @version        0.3
 // @author         Tony
 // @description    Switch YouTube subtitle to Chinese automatically
 // @description:zh 自动切换 YouTube 字幕到中文
