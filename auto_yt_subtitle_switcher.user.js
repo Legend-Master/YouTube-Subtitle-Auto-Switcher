@@ -41,7 +41,14 @@
             return
         }
         const code = getPreferredLanguageCode(api.getOption('captions', 'tracklist'))
-        if (autoTranslate && code !== AUTO_TRANSLATE_CODE) {
+        if (code && code !== captionsSetting.languageCode) {
+            api.setOption?.('captions', 'track', { languageCode: code })
+        }
+        if (
+            autoTranslate
+            && code !== AUTO_TRANSLATE_CODE
+            && captionsSetting?.translationLanguage?.languageCode !== AUTO_TRANSLATE_CODE
+        ) {
             const translationLanguage = api.getOption('captions', 'translationLanguages')?.find(
                 (element) => element.languageCode === AUTO_TRANSLATE_CODE
             )
@@ -51,11 +58,8 @@
                     translationLanguage,
                 })
             }
-            return
         }
-        if (code && code !== captionsSetting.languageCode) {
-            api.setOption?.('captions', 'track', { languageCode: code })
-        }
+        return true
     }
 
     const hookedButtons = new Set()
@@ -89,6 +93,17 @@
                 continue
             }
             hookedButtons.add(button)
+            // Before youtube switch, if has caption and shift is down,
+            // do our switch and prevent youtube switch (and our post switch)
+            button.addEventListener('click', (event) => {
+                if (event.shiftKey) {
+                    const hasCaption = switchCaption(api, true)
+                    if (hasCaption) {
+                        event.stopImmediatePropagation()
+                    }
+                }
+            }, true)
+            // After youtube switch, do our switch
             button.addEventListener('click', (event) => {
                 switchCaption(api, event.shiftKey)
             })
