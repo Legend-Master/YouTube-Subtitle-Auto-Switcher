@@ -20,6 +20,7 @@
 
     // 中文（简体）-> 中文（中国）-> 中文 -> 中文（香港） -> 中文（台湾）
     const LANGUAGE_CODE_PRIORITY = [ 'zh-Hans', 'zh-CN', 'zh', 'zh-HK', 'zh-TW' ]
+    const AUTO_TRANSLATE_CODE = LANGUAGE_CODE_PRIORITY[0]
 
     function getPreferredLanguageCode(captions) {
         if (captions) {
@@ -33,13 +34,25 @@
         }
     }
 
-    function switchCaption(api) {
+    function switchCaption(api, autoTranslate) {
         // No languageCode means caption not enabled
         const captionsSetting = api.getOption?.('captions', 'track')
         if (!captionsSetting?.languageCode) {
             return
         }
         const code = getPreferredLanguageCode(api.getOption('captions', 'tracklist'))
+        if (autoTranslate && code !== AUTO_TRANSLATE_CODE) {
+            const translationLanguage = api.getOption('captions', 'translationLanguages')?.find(
+                (element) => element.languageCode === AUTO_TRANSLATE_CODE
+            )
+            if (translationLanguage) {
+                api.setOption?.('captions', 'track', {
+                    ...captionsSetting,
+                    translationLanguage,
+                })
+            }
+            return
+        }
         if (code && code !== captionsSetting.languageCode) {
             api.setOption?.('captions', 'track', { languageCode: code })
         }
@@ -76,8 +89,8 @@
                 continue
             }
             hookedButtons.add(button)
-            button.addEventListener('click', () => {
-                switchCaption(api)
+            button.addEventListener('click', (event) => {
+                switchCaption(api, event.shiftKey)
             })
         }
     }
