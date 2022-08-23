@@ -8,6 +8,8 @@ The reason why I made this is because there's a lot of Chinese language codes fo
 
 It will try to switch to Chinese subtitle when you click the caption button (short cut `C` not included) and when the video first loaded
 
+Shift + click the caption button will enable auto translate
+
 ## Known Issues
 
 - Can't auto switch after offline re-online sometimes, onApiChange will not trigger even tho caption module do reloaded
