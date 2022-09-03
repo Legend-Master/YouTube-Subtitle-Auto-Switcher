@@ -10,8 +10,8 @@
 // @updateURL      https://github.com/Legend-Master/YouTube-Subtitle-Auto-Switcher/raw/main/auto_yt_subtitle_switcher.user.js
 // @downloadURL    https://github.com/Legend-Master/YouTube-Subtitle-Auto-Switcher/raw/main/auto_yt_subtitle_switcher.user.js
 // @supportURL     https://github.com/Legend-Master/YouTube-Subtitle-Auto-Switcher/issues
-// @match          http://www.youtube.com/*
 // @match          https://www.youtube.com/*
+// @exclude        https://www.youtube.com/live_chat?*
 // @grant          none
 // ==/UserScript==
 
